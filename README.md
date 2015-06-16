@@ -1,4 +1,5 @@
-# The "Wildflower" programming language
+# Wildflower
+Wildflower is a minimalistic, pure functional, JSON-formatted programming language.
 
 ## Status
  * Wildflower is just an idea at the moment.
