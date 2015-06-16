@@ -5,18 +5,18 @@
  * The specification is largely yet-to-be developed and no platform implementations exist.
 
 ## The Wildflower programming language ...
- * is minimalistic
- * is purely functional (side-effect free)
- * is dynamically typed (or perhaps more accurately has no types)
- * has strict (aka eager or applicative order) evaluation<sup>1</sup>
- * is parsed and stored in an extensible JSON format
- * has functions that consume and return a fixed number of arguments
- * has an minimalistic system for interfaces (simply groups of functions that are left undefined)
- * strives to make no other assumptions than the above
+ * is minimalistic.
+ * is purely functional. (side-effect free)
+ * is dynamically typed. (or perhaps, more accurately, has no types)
+ * has strict (aka eager or applicative order) evaluation.<sup>1</sup>
+ * is parsed and stored in an extensible JSON format.
+ * has functions that consume and return a fixed number of arguments.
+ * has an minimalistic system for interfaces. (simply groups of functions that are left undefined)
+ * strives to make no further assumptions, leaving many potential features up to language extensions and metaprograms.
 
 ## Why
  * Wildflower is designed to facilitate program analysis, transformation, and optimization.
- * Wildflower is designed to compile to (target) a wide variety of platforms: from hardware description languages like VHDL up through clustered platforms like hadoop.  It can accomplish this by specifying very little in the core language (Wildflower has no primitive datatypes!) and allowing platforms to implement only the appropriate interfaces.
+ * Wildflower is designed to compile to a wide variety of platforms: from hardware description languages like VHDL up through clustered platforms like hadoop.  It can accomplish this by specifying very little in the core language (Wildflower has no primitive datatypes!) and allowing platforms to implement only the appropriate interfaces.
 
 ## Details
  * Wildflower code is represented as a directed, acyclic graph with port labels to distinguish input and output values from each other.
@@ -49,7 +49,7 @@
           "C": {"call": "#/refs/1/add"}},
           "D": {"call": "#/refs/0/duplicate"}},
           "E": {"call": "#/refs/1/multiply"}},
-	  "F": {"out": 0}
+          "F": {"out": 0}
         },
         "edges": {
           "A": [{"to": "C", "port": 0}],
