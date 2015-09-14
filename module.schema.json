@@ -1,0 +1,240 @@
+{
+    "title": "Module",
+    "type": "object",
+    "required": ["src_version", "refs", "functions"],
+    "properties": {
+	"src_version": {
+	    "type": "string",
+	    "enum": ["0.1"]
+	},
+	"name": {
+	    "type": "string",
+	    "description": "The name of the module.  This is a just a user-friendly label, and need not be unique"
+	},
+	"refs": {
+	    "type": "array",
+	    "items": {"$ref": "#/definitions/ref"}
+	},
+	"injection_prefs": {
+	    "type": "object",
+	    "required": ["order"],
+	    "properties": {
+		"order": {
+		    "type": "number", 
+		    "description": "A preference for when these module's overrides occur.  Overrides with higher values here will wrap implementations in modules with lower values."
+		}
+	    }
+	},
+	"tags": {
+	    "description": "Tags for organization purposes.  These do not influence the runtime directly.",
+	    "type": "array",
+	    "items": {"type": "string"}
+	},
+	"functions": {
+	    "type": "object",
+	    "description": "This object is keyed by arbitrary strings that are unique within the module.",
+	    "additionalProperties": {"$ref": "#/definitions/function"}
+	},
+	"workInProgress": {
+	    "type": "boolean",
+	    "description": "A flag indicating the module is a work in progress and should not be used"
+	},
+	"forkedFrom": {
+	    "properties": {
+		"ref": {"$ref": "#/definitions/ref"},
+		"date": {"type": "string", "format": "date-time"},
+	    }
+	}
+    },
+    "definitions": {
+	"ref": {
+	    "description": "Refers to other modules by URL.",
+	    "required": ["url"],
+	    "properties": {
+		"url": {
+		    "type": "string",
+		    "description": "A permalink to the referral's module.  This should be a publicly accessible link."
+		},
+		"size": {
+		    "type": "integer",
+		    "description": "Size of the file, in bytes.",
+		    "minimum": 0
+		},
+		"hash": {
+		    "type": "string",
+		    "description": "SHA-256 hash of the file referred to.  Used to confirm that the source has not changed."
+		}
+	    }
+	},
+	"function": {
+	    "type": "object",
+	    "description": "",
+	    "required": ["code"],
+	    "properties": {
+		"name": {"type": "string"},
+		"overrides": {
+		    "type": "string",
+		    "description": "The identifier of the function to override"
+		},
+		"numConsumed": {
+		    "type": "integer",
+		    "description": "The number of stack items that this function uses (pops off the stack)"
+		},
+		"numProduced": {
+		    "type": "integer",
+		    "description": "The number of stack items that this function produced (leaves on the stack)"
+		},
+		"condition": {"$ref": "#/definitions/codearray"},
+		"code": {"$ref": "#/definitions/codearray"},
+		"nativeCode": {
+		    "type": "object",
+		    "description": "Maps Wildflower platform ids to values that represent native code.  The nature of the value depends on the platform."
+		}
+	    }
+	},
+	"block": {
+	    "type": "object",
+	    "description": "A block of code.  May optionally contain condition code which signals whether this code is prepared to handle the current values on the stack.",
+	    "required": ["code"],
+	    "properties": {
+		"comment": {"type": "string"},
+		"condition": {"$ref": "#/definitions/codearray"},
+		"code": {"$ref": "#/definitions/codearray"}
+	    }
+	},
+	"codearray": {
+	    "type": "array",
+	    "items": {"$ref": "#/definitions/operation"}
+	},
+	"operation": {
+	    "type": "object",
+	    "oneOf": [
+		{"$ref": "#/definitions/callOp"},
+		{"$ref": "#/definitions/literalOp"},
+		{"$ref": "#/definitions/lambdaOp"},
+		{"$ref": "#/definitions/callLambdaOp"},
+		{"$ref": "#/definitions/saveLoadOp"},
+		{"$ref": "#/definitions/condOp"},
+		{"$ref": "#/definitions/newDynamicScopeOp"}
+	    ]
+	},
+	"baseOp": {
+	    "required": ["op"],
+	    "properties": {
+		"comment": {"type": "string"},
+		"llid": {
+		    "type": "string", 
+		    "description": "A long-lived uuid that may be used to track this bit of code time."
+		}
+	    }
+	},
+	"callOp": {
+	    "description": "Calls a function.",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {
+			    "type":"string",
+			    "pattern":"^(?!literal$)(?!save$)(?!load$)(?!cond$)(?!dynamicScope$).",
+			    "description": "The identifier of the function.  Must be declared in at least one of dependency modules pointed to in the 'refs' section, above."
+			},
+			"at": {
+			    "type": "integer", 
+			    "description": "To minimize stack shuffling, operations may be called at a certain depth.  When 'at' is nonzero, the operation behaves as though that many items were popped off the stack before the operation is executed and then returned to the stack in their original order",
+			    "minimum":0
+			}
+		    }
+		}
+	    ]
+	},
+	"literalOp": {
+	    "required": ["val"],
+	    "description": "Pushes a literal json value onto the stack as a new item",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["literal"]},
+			"val": {
+			    "description": "The value to push onto the stack."
+			}
+		    }
+		}
+	    ]
+	},
+	"lambdaOp": {
+	    "required": ["code"],
+	    "description": "Pushes a function onto the stack as a new item",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["lambda"]},
+			"code": {
+			    "description": "Code for the function.",
+			    "$ref": "#/definitions/codearray"
+			}
+		    }
+		}
+	    ]
+	},
+	"callLambdaOp": {
+	    "required": ["numConsumed", "numProduced"],
+	    "description": "Invokes a lambda function",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["callLambda"]},
+			"numConsumed": {"type": "integer"},
+			"numProduced": {"type": "integer"}
+		    }
+		}
+	    ]
+	},
+	"saveLoadOp": {
+	    "required": ["name"],
+	    "description": "Saves to or loads from a lexically scoped variable.  This may be used for closures or simply to reduce stack shuffling.  When loading, if there is no lexically scoped variable with the name given, it loads a dynamically scoped variable with the given name.",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["save", "load"]},
+			"name": {"type": "string"}
+		    }
+		}
+	    ]
+	},
+	"condOp": {
+	    "required": ["branches"],
+	    "description": "Implements a conditional by nesting a sequence of blocks; the first block which has a successful conditional is executed and the remainder are skipped.",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["cond"]},
+			"branches": {
+			    "type": "array",
+			    "items": {"$ref": "#/definitions/block"}
+			}
+		    }
+		}
+	    ]
+	},
+	"newDynamicScopeOp": {
+	    "required": ["code"],
+	    "description": "Pops a value off the stack and assigns the named variable to it as an addition to the current dynamic scope, hiding any previous assignments for that variable.  Executes the contained code with this scope, and reverts to the original dynamic scope afterwards.",
+	    "allOf": [
+		{"$ref": "#/definitions/baseOp"},
+		{
+		    "properties": {
+			"op": {"enum": ["dynamicScope"]},
+			"name": {"type": "string"},
+			"code": {"$ref": "#/definitions/codearray"}
+		    }
+		}
+	    ]
+	}
+    }
+}
