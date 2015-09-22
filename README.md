@@ -5,6 +5,7 @@ Wildflower is a minimalistic, pure functional, JSON-formatted programming langua
  * Wildflower is just an idea at the moment.
  * No specification exists and no platform implementations exist.
  * There is, however, a [JSON schema](module.schema.json) available for Wildflower source files and the documentation in there provides a few hints about where I'm going.
+ * I am working on a touch-based interface for editing Wildflower code here: (https://github.com/pschanely/wildflower-touch).
 
 ## The Wildflower programming language ...
  * is minimalistic.
