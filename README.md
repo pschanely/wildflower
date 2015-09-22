@@ -3,8 +3,8 @@ Wildflower is a minimalistic, pure functional, JSON-formatted programming langua
 
 ## Status
  * Wildflower is just an idea at the moment.
- * The specification is largely yet-to-be developed and no platform implementations exist.
- * There is, however, a [JSON schema](module.schema.json) available for Wildflower source files.
+ * No specification exists and no platform implementations exist.
+ * There is, however, a [JSON schema](module.schema.json) available for Wildflower source files and the documentation in there provides a few hints about where I'm going.
 
 ## The Wildflower programming language ...
  * is minimalistic.
@@ -26,122 +26,64 @@ Wildflower is a minimalistic, pure functional, JSON-formatted programming langua
  * Wildflower supports first order functions and lambda expressions, which may refer to special named values in their closure.
 
 ## Example 
+This isn't a terribly useful example (largely because functions are referred to through uuids), but it is my current implementation of the reduce function:
 ```
 {
-    "refs": [
-    	{"url": "base.wf.json", "size": 1942, "hash": "95ae9e835bb041ac9c8cce52fb58d9d4"}
-    ],
-    "src_version": "0.1",
-    "functions": {
-	"number_combine" : {
-	    "comment": "Interface for a function that takes two numbers and does stuff with them",
-	    "condition": [
-                {"op": "literal", "val": false}
-	    ],
-	    "code": []
-	}
-    }
-}
-{
-    "refs": [
-    	{"url": "number_interface.wf.json", "size": 1942, "hash": "95ae9e835bb041ac9c8cce52fb58d9d4"},
-    	{"url": "base.wf.json", "size": 1942, "hash": "95ae9e835bb041ac9c8cce52fb58d9d4"}
-    ],
-   "refs": [{"url": "
-	"add_and_sum": {
-	    "comment": "",
-	    "condition": [
-	        {"op": "literal", "val": true}
-	    ],
-	    "code": [
-	    ]
-	}
-		{"op": "literal", "val": 2},
-		{"op": "literal", "val": 2},
-		{"op": "save", "name": "myvar"},
-		{"op": "load", "name": "myvar"},
-		{"op": "cond", "branches": [
-		    {
-			"condition": [
-			    {"op": "literal", "val": 0},
-			    {"op": "call", "ref": "5f69ac55bdb34f24ab178c301b5b423f", "at": 0}
-			 ],
-			"code": [
-			    {"op": "call", "ref": "b486a7b7704a42a682889cb0a8027f53", "at": 0},
-			    {"op": "call", "ref": "b486a7b7704a42a682889cb0a8027f53", "at": 0},
-			    {"op": "literal", "val": -1}
-			]
-		    },
-		    {
-			"code": [
-			    {"op": "call", "ref": "cf6085288ff54d4e8812ff4632b70128", "at": 0},
-			    {"op": "call", "ref": "3b7a481f2a9c429a828eee43d1ec7c3b", "at": 0},
-			    {"op": "call", "ref": "d10b90f9541e4844b996750799f66eef", "at": 0}
-			]
-		    }
-		]}
-	    ]
-	}
-    }
-}
-
-{
-  "refs": [
-    {"url": "http://.../dataflow.wf.json", "size": 1942, "hash": "95ae9e835bb041ac9c8cce52fb58d9d4"},
-    {"url": "http://.../basic_arithemetic.wf.json", "size": 23452, "hash": "37e80391de41442c855512b9ce6aa0ee"}
+  "src_version":"0.1",
+  "name":"An implementation of reduce",
+  "refs":[
+    {"url":"http://millstonecw.com:11739/module/12db0c6b9d2a0776a3f1599b0fb40fff"}
   ],
-
   "functions": {
-
-    "add_and_square": {
-      "comment": "An interface for a function that sums two numbers and squares the result",
-      "inputs": [{}, {}],
-      "outputs": [{}],
-      "invariants": [
-        {
-	  "rewrite": [
-	    {"op": "call", "#/refs/0/swap"},
-            {"op": "call", "ref": "#/functions/add_and_square"}
-	  ],
-	  "to": [
-	    {"op": "call", "ref": "#/functions/add_and_square"}
-          ]
-        }
+    "4f06d7838207044cc46e7c72db06e2d0": {
+      "name":"reduce",
+      "overrides":"0:febfb8588be5ed1df6f2893743921a7c",
+      "tags":[],
+      "numConsumed":2,
+      "numProduced":1,
+      "condition":[
+        {"op":"literal","val":true}
       ],
-      "domain": [
-        {"id": "B", "op": "call", "ref": "#/refs/1/isint"},
-	{"id": "D", "op": "callat", "at": 1, "ref": "#/refs/1/isint"},
-      ]
-    },
-
-    "add_and_square_implementation": {
-      "implements": "#/functions/add_and_square",
-      "code": [
-        {"id": "A", "op": "call", "ref": "#/refs/1/add"},
-        {"id": "B", "op": "call", "ref": "#/refs/0/duplicate"},
-        {"id": "C", "op": "call", "ref": "#/refs/1/multiply"}
+      "code":[
+        {"op":"cond","branches":[
+          {
+            "condition":[
+              {"op":"0:5bdf7b1b60e0021e378be04f0b39a634"},
+              {"op":"0:a83dff7e6a6c88b285c3f1657c324be5"},
+              {"op":"literal","val":1},
+              {"op":"0:733ba5ff2d457f51e7428d62cbbbd33f"}
+            ],
+            "code":[
+              {"op":"0:5bdf7b1b60e0021e378be04f0b39a634"},
+              {"op":"0:bfe4f5231bd430895886baee7e9ecf51"},
+              {"op":"0:a56e56fdbc398e6cee309fce400bb2b1"},
+              {"op":"0:5bdf7b1b60e0021e378be04f0b39a634"}
+            ]
+          },
+          {
+            "condition":[
+              {"op":"literal","val":true}
+            ],
+            "code":[
+              {"op":"save","name":"f"},
+              {"op":"0:bfe4f5231bd430895886baee7e9ecf51"},
+              {"op":"save","name":"x"},
+              {"op":"0:bfe4f5231bd430895886baee7e9ecf51"},
+              {"op":"save","name":"y"},
+              {"op":"load","name":"x"},
+              {"op":"load","name":"y"},
+              {"op":"load","name":"f"},
+              {"op":"callLambda", "numConsumed":2, "numProduced":1},
+              {"op":"0:cd5c7dd3fb29443bb873c62f34f095a6"},
+              {"op":"load","name":"f"},
+              {"op":"0:febfb8588be5ed1df6f2893743921a7c"}
+            ]
+          }
+        ]}
       ]
     }
-
   }
 }
-```
-
-## Stack-graph hybrid example w/ lambda
-```
-  "code": [
-    {"id":"A", "op":"lambda", "code":[{"literal":1}, {"call":"#/refs/1/add"}]},
-    {"id":"B", "op":"literal", "val":[2,4,6]},
-    {"id":"C", "op":"lambda", "code":[{"literal":2}, {"pull":1}, {"call":"#/refs/1/divide"}], "comment":"divide by 2"},
-    {"id":"D", "op":"call", "ref": "#/refs/0/map"},
-    {"id":"E", "op":"eval", inputs:2, outputs:1},
-    {"id":"F", "op":"push", "code": [
-    ]}
-    {"id":"I", "op":"cond", "branches": [
-      [{"call":..}, {"op":"predicate", "kind":"conditional"}, ..],
-      [..],
-    ]},
-  ]
 ```
 
 
